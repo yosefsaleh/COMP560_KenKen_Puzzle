@@ -1,7 +1,8 @@
 package kenken;
 
 public class Node {
-    String operation;
+    char operation;
+    char character;
     int finalNumber;
     Node up;
     Node left;
@@ -15,14 +16,15 @@ public class Node {
     // up, left, down, and right (which are used to know if neighboring nodes are grouped with the current node)
     // solution (which is the number solution for that specific tile on the kenken square)
 
-    public Node(int finalNumber, String operation, Node up, Node left, Node down, Node right, int solution) {
+    public Node(char character, int finalNumber, char operation) {
         this.finalNumber = finalNumber;
+        this.character = character;
         this.operation = operation;
-        this.up = up;
-        this.left = left;
-        this.down = down;
-        this.right = right;
-        this.solution = solution;
+        up = null;
+        left = null;
+        down = null;
+        right = null;
+        solution = 0;
     }
 
 }

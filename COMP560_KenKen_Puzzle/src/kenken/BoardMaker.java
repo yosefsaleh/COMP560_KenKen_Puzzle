@@ -1,22 +1,26 @@
 package kenken;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
-
+import java.util.Arrays;
 import java.util.Scanner; 
-
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 
 public class BoardMaker {
 	
-	File inputFile;
-	int puzzleSize; 
-	String size;
-	// made this into a char[][] so we can get the specific characters from the nextLine() scan
-	char [][] boardMatrix;  
-	Node [][] finalMatrix;
-	String [] numbersAndOperations;
-	public BoardMaker(File file) throws FileNotFoundException {
+	File inputFile; // text file that contains all the information about the KenKen puzzle
+	int puzzleSize; // size of the puzzle board
+	int totalNumLines; // number of lines in the input file
+	char [][] boardMatrix; // a char[][] so we can get the specific characters from the nextLine() scan
+	String [] numbersAndOperations; // an array that keeps track of all the lines that involve operators
+	Node [][] finalMatrix; // what the final game board should look like before we start filling it with solutions 
+	int startNumFill = 0; // indicates what line of the scanner to start filling in operations array from 
+	
+	public BoardMaker(File file) throws IOException {
 		
 		inputFile = new File("/Users/yoyosef/git/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");  // import text file into variable
 		Scanner scanner = new Scanner(inputFile); // Scanner object
@@ -24,6 +28,16 @@ public class BoardMaker {
 		int row = 0; 
 		int col = 0;
 		int indx = 0;
+		
+		// Created a Buffered reader and used a simple while loop to read the file and get the total number of lines for the file
+		// Need this number to initialize numbersAndOperation array
+		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		totalNumLines = 0;
+		while (reader.readLine() != null) 
+		totalNumLines++;
+		reader.close();	
+		
+		
 		do {
 			String currentLine = scanner.nextLine();
 			//System.out.println(currentLine);
@@ -38,19 +52,19 @@ public class BoardMaker {
 					boardMatrix[row][col] = currentLine.charAt(col);
 				}
 				row++;
-			}
+			} 
 			lineNumber++;
-			// loop reaches here now because lineNumber is past puzzleSize
+			startNumFill++;
 
-			// places the rest of the scanned lines into an array.. numbersAndOperations[0] will have 
-			// A:11+ , numbersAndOperations[1] will have B:2/, ect.
+		} while (startNumFill <= puzzleSize);
+		makeNumAndOpsArray();
+		
+		do {
+			String currentLine = scanner.nextLine();
 			numbersAndOperations[indx] = currentLine;
 			indx++;
-
-			finalMatrix = getFinalMatix(boardMatrix, numbersAndOperations);
-
-
-		} while (scanner.hasNextLine());
+		} while(scanner.hasNextLine());		
+		finalMatrix = getFinalMatix(boardMatrix, numbersAndOperations);	
 	}
 
 	private Node[][] getFinalMatix(char[][] boardMatrix, String[] numbersAndOperations) {
@@ -72,7 +86,7 @@ public class BoardMaker {
 
 						// next three lines extract the number and operation from numbersAndOperations
 						int num = numbersAndOperations[t].length();
-						tempOperation = numbersAndOperations[t].charAt(num);
+						tempOperation = numbersAndOperations[t].charAt(num - 1);
 						tempNumber = getNumberFromString(numbersAndOperations[t]);
 					}
 				}
@@ -99,25 +113,25 @@ public class BoardMaker {
 			for(int col = 0; col < puzzleSize; col++) {
 				Node temp = matrix[row][col];
 
-				if(col - 1 != 0) {
+				if(col - 1 >= 1) {
 					Node temp2 = matrix[row][col-1];
 					if(temp.character == temp2.character) {
 						temp.left = matrix[row][col-1];
 					}
 				}
-				if(col + 1 != puzzleSize) {
+				if(col + 1 < puzzleSize) {
 					Node temp2 = matrix[row][col+1];
 					if(temp.character == temp2.character) {
 						temp.right = matrix[row][col+1];
 					}
 				}
-				if(row - 1 != 0) {
+				if(row - 1 >= 0) {
 					Node temp2 = matrix[row-1][col];
 					if(temp.character == temp2.character) {
 						temp.up = matrix[row-1][col];
 					}
 				}
-				if(row + 1 != puzzleSize) {
+				if(row + 1 < puzzleSize) {
 					Node temp2 = matrix[row+1][col];
 					if(temp.character == temp2.character) {
 						temp.down = matrix[row+1][col];
@@ -143,11 +157,26 @@ public class BoardMaker {
 	private char[][] makeBoardArray(int n) {
 		
 		boardMatrix = new char[n][n]; 
+		finalMatrix = new Node[n][n];
 		
 		return boardMatrix;
 	}
+	private String[] makeNumAndOpsArray() {
+		numbersAndOperations = new String[totalNumLines - startNumFill];
+		return numbersAndOperations;
+	}
 	
-
-
+	// Helper method to visualize and test the creation of the final game board 
+	public void printFinalMatrix() {
+		for (int i = 0; i < puzzleSize; i++) {
+			System.out.println(" ");
+			for (int j = 0; j < puzzleSize; j++) {
+				System.out.print(finalMatrix[i][j].character);
+				System.out.print(finalMatrix[i][j].finalNumber);
+				System.out.print(finalMatrix[i][j].operation + " ");
+				
+				}
+		}
+	}
 
 }

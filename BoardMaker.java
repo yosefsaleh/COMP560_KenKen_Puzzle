@@ -1,29 +1,17 @@
 package kenken;
 
-<<<<<<< HEAD
 import java.io.BufferedReader;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class BoardMaker {
 
-	File inputFile;
-	int puzzleSize;
-	String size;
-	// made this into a char[][] so we can get the specific characters from the
-	// nextLine() scan
-	char[][] boardMatrix;
-	int totalNumLines;
-	Node[][] finalMatrix;
-	String[] numbersAndOperations;
-	int startNumFill = 0;
-
-=======
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,17 +22,18 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
+
 public class BoardMaker {
 	
 	File inputFile; // text file that contains all the information about the KenKen puzzle
 	int puzzleSize; // size of the puzzle board
+	HashSet set = new HashSet();
 	int totalNumLines; // number of lines in the input file
 	char [][] boardMatrix; // a char[][] so we can get the specific characters from the nextLine() scan
 	String [] numbersAndOperations; // an array that keeps track of all the lines that involve operators
 	Node [][] finalMatrix; // what the final game board should look like before we start filling it with solutions 
 	int startNumFill = 0; // indicates what line of the scanner to start filling in operations array from 
 	
->>>>>>> 819daa5a20bb86d79ba646ad7727c70c1ff3ebe9
 	public BoardMaker(File file) throws IOException {
 		
 		inputFile = new File("/Users/edesern/Documents/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");  // import text file into variable
@@ -52,6 +41,7 @@ public class BoardMaker {
 		int lineNumber = 0; // indicates what line the scanner is at
 		int row = 0; 
 		int col = 0;
+		
 		int indx = 0;
 		
 		// Created a Buffered reader and used a simple while loop to read the file and get the total number of lines for the file
@@ -61,11 +51,8 @@ public class BoardMaker {
 		while (reader.readLine() != null) 
 		totalNumLines++;
 		reader.close();	
-<<<<<<< HEAD
-=======
-		
-		
->>>>>>> 819daa5a20bb86d79ba646ad7727c70c1ff3ebe9
+
+		// Fills BoardArray with leters... used later to create nodes
 		do {
 			String currentLine = scanner.nextLine();
 			//System.out.println(currentLine);
@@ -87,55 +74,89 @@ public class BoardMaker {
 		} while (startNumFill <= puzzleSize);
 		makeNumAndOpsArray();
 		
+		// fills numberAndOperations with the letter, the final number, and the operation attached
 		do {
 			String currentLine = scanner.nextLine();
 			numbersAndOperations[indx] = currentLine;
 			indx++;
 		} while(scanner.hasNextLine());		
 		finalMatrix = getFinalMatix(boardMatrix, numbersAndOperations);	
-<<<<<<< HEAD
-		
-=======
->>>>>>> 819daa5a20bb86d79ba646ad7727c70c1ff3ebe9
+
 	}
 
 	private Node[][] getFinalMatix(char[][] boardMatrix, String[] numbersAndOperations) {
 		char tempOperation = 'a';
 		int tempNumber = 0;
+		
 
 		// loop through 2D array of the board
+		// this code fills finalMatrix with nodes for every tile in the kenken puzzle
+		// later, we use this to create cages that group the nodes together.
 		for(int i = 0; i < puzzleSize; i++) {
 			for(int j = 0; j < puzzleSize; j++) {
 
 				// extracts a char from the board
 				char character = boardMatrix[i][j];
 
-				// loops through the numbersAndOperations array
-				for(int t = 0; t < numbersAndOperations.length; t++) {
-
-					// checks if first element of a row matches the char on the board (ex: charAt(0) == 'A' and matches 'A' on the board)
-					if(numbersAndOperations[t].charAt(0) == character) {
-
-						// next three lines extract the number and operation from numbersAndOperations
-						int num = numbersAndOperations[t].length();
-						tempOperation = numbersAndOperations[t].charAt(num - 1);
-						tempNumber = getNumberFromString(numbersAndOperations[t]);
-					}
-				}
-
 				// make a new Node for the board tile and update finalMatrix
-				Node node = new Node(i, j);
+				Node node = new Node(character, i, j);
 				finalMatrix[i][j] = node;
-				Cage cage = new Cage(tempNumber, tempOperation);
-				cage.setNodes(node);
+				
 			}
 		}
+
+		
+
+
+
+		// loops through the numbersAndOperations array
+		// this code is for creating cages for every letter in the kenken puzzle.
+		for(int t = 0; t < numbersAndOperations.length; t++) {
+
+			// checks if first element of a row matches the char on the board (ex: charAt(0) == 'A' and matches 'A' on the board)
+			char character = numbersAndOperations[t].charAt(0);
+		
+				// next three lines extract the number and operation from numbersAndOperations
+				int num = numbersAndOperations[t].length();
+				tempOperation = numbersAndOperations[t].charAt(num - 1);
+				tempNumber = getNumberFromString(numbersAndOperations[t]);
+
+				// now we make a new ArrayList containing nodes that share the same letter (A, A), (B, B), ect.
+				// calls my getArrayList method.
+				ArrayList<Node> arr = getArrayList(character);
+
+				// create new cage with the final number of the cage, the operation of the cage, the letter of
+				// the cage, and the arrayList containing all the nodes in the cage.
+				Cage cage = new Cage(tempNumber, tempOperation, character, arr);
+
+				// we add our cages to a HashSet.. if the set doesn't contain the cage, we add it. This is used
+				// to save the cages since we create them locally inside the for loops.
+				if(!set.contains(cage)) {
+					set.add(cage);
+				}
+		}
+
 
 		// calls method to check if the node has neighboring nodes
 		checkNeighbors(finalMatrix);
 
 		return finalMatrix;
 	}
+
+	// creates an ArrayList of nodes with similar characters.
+	public ArrayList<Node> getArrayList(char character) {
+		ArrayList<Node> arr = new ArrayList<Node>();
+		for(int i = 0; i < puzzleSize; i++) {
+			for(int j = 0; j < puzzleSize; j++) {
+				if(finalMatrix[i][j].character == character) {
+					arr.add(finalMatrix[i][j]);
+				}
+			}
+		}
+		return arr;
+	}
+
+	// prints our finalMatrix (Matrix with Nodes)
 	public void printFinalMatrix() {
 		for (int i = 0; i < puzzleSize; i++) {
 			System.out.println(" ");
@@ -147,12 +168,11 @@ public class BoardMaker {
 		}
 	}
 
+
+	// this method iterates through the rows and columns of the Node[][] and compares the nodes above, below,
+	// left, and right of the current node to see if they have matching characters.. if they do, then update
+	// the neighbor of the current node
 	private void checkNeighbors(Node[][] matrix) {
-
-		// this method iterates through the rows and columns of the Node[][] and compares the nodes above, below,
-		// left, and right of the current node to see if they have matching characters.. if they do, then update
-		// the neighbor of the current node
-
 		for(int row = 0; row < puzzleSize; row++) {
 			for(int col = 0; col < puzzleSize; col++) {
 				Node temp = matrix[row][col];
@@ -185,6 +205,7 @@ public class BoardMaker {
 		}
 	}
 
+	// parses an int from a string containing chars and ints (ex: takes in "A:11+" and returns 11).
 	private int getNumberFromString(String string) {
 		String result = "";
 		for(int v = 0; v < string.length(); v++) {
@@ -194,43 +215,33 @@ public class BoardMaker {
 			}
 		}
 		int finalAns = Integer.parseInt(result);
-
 		return finalAns;
 	}
 
+
+	// makes the board arrays of size n.
 	private char[][] makeBoardArray(int n) {
 		
 		boardMatrix = new char[n][n]; 
 		finalMatrix = new Node[n][n];
-		
 		return boardMatrix;
 	}
+
+
+	// makes the numbersAndOperations array used to fill them with "A:11+", "B:2/", ect.
 	private String[] makeNumAndOpsArray() {
 		numbersAndOperations = new String[totalNumLines - startNumFill];
 		return numbersAndOperations;
 	}
-<<<<<<< HEAD
+
+
+
 
 	public int[] getPossibleNumbers(int puzzleSize) {
 		int[] array = new int[puzzleSize];
         for(int i =0; i < puzzleSize; i++) {
 			array[i] = i+1;
 		}
-=======
-	
-	// Helper method to visualize and test the creation of the final game board 
-	public void printFinalMatrix() {
-		for (int i = 0; i < puzzleSize; i++) {
-			System.out.println(" ");
-			for (int j = 0; j < puzzleSize; j++) {
-				System.out.print(finalMatrix[i][j].character);
-				System.out.print(finalMatrix[i][j].finalNumber);
-				System.out.print(finalMatrix[i][j].operation + " ");
-				
-				}
-		}
-	}
->>>>>>> 819daa5a20bb86d79ba646ad7727c70c1ff3ebe9
 
 		return array;
 	}

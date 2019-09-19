@@ -7,16 +7,11 @@ import java.util.Arrays;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-<<<<<<< HEAD
 		File inputFile = new File("/Users/edesern/Documents/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
 		BoardMaker board = new BoardMaker(inputFile);
 
 
 		//board.printFinalMatrix();
-
-=======
-		File inputFile = new File("/Users/yoyosef/git/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
-		BoardMaker board = new BoardMaker(inputFile);
 		
 		
 		
@@ -25,8 +20,16 @@ public class Main {
 		//System.out.println(Arrays.deepToString(board.numbersAndOperations));
 		
 		//board.printFinalMatrix();
+		BackTrack back = new BackTrack(board);
+		back.main(args);
+
+
+		for(int i = 0; i < board.finalMatrix.length; i++) {
+			for(int j = 0; j < board.finalMatrix.length; j++) {
+				System.out.println(back.checkCage(board.finalMatrix[i][j], board));
+			}
+		}
 		
 		
->>>>>>> 819daa5a20bb86d79ba646ad7727c70c1ff3ebe9
 	}
 }

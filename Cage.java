@@ -24,9 +24,6 @@ public char getOperation() {
     return oper;
 }
 
-public void setNodes(Node node) {
-    nodes.add(node);
-}
 
 public boolean contains(Node node) {
     if(!nodes.contains(node)) {

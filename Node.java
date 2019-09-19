@@ -16,7 +16,6 @@ public class Node{
     int solution;
     int row;
     int col;
-    HashSet setOfNumbers;
 
 
 
@@ -35,6 +34,7 @@ public class Node{
         this.finalNumber = 0;
         this.row = row;
         this.col = col;
+        solution = 0;
     }
 
 
@@ -49,6 +49,9 @@ public class Node{
     }
     public void setFinalNumber(int i) {
         finalNumber = i;
+    }
+    public void setSolution(int num) {
+        solution = num;
     }
 
 

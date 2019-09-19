@@ -28,6 +28,7 @@ public class BoardMaker {
 	File inputFile; // text file that contains all the information about the KenKen puzzle
 	int puzzleSize; // size of the puzzle board
 	HashSet set = new HashSet();
+	Cage[] cages;
 	int totalNumLines; // number of lines in the input file
 	char [][] boardMatrix; // a char[][] so we can get the specific characters from the nextLine() scan
 	String [] numbersAndOperations; // an array that keeps track of all the lines that involve operators
@@ -87,6 +88,7 @@ public class BoardMaker {
 	private Node[][] getFinalMatix(char[][] boardMatrix, String[] numbersAndOperations) {
 		char tempOperation = 'a';
 		int tempNumber = 0;
+		cages = new Cage[numbersAndOperations.length];
 		
 
 		// loop through 2D array of the board
@@ -104,10 +106,6 @@ public class BoardMaker {
 				
 			}
 		}
-
-		
-
-
 
 		// loops through the numbersAndOperations array
 		// this code is for creating cages for every letter in the kenken puzzle.
@@ -128,18 +126,17 @@ public class BoardMaker {
 				// create new cage with the final number of the cage, the operation of the cage, the letter of
 				// the cage, and the arrayList containing all the nodes in the cage.
 				Cage cage = new Cage(tempNumber, tempOperation, character, arr);
-
-				// we add our cages to a HashSet.. if the set doesn't contain the cage, we add it. This is used
+				cages[t] = cage;
+				// we add our cages to an array.. This is used
 				// to save the cages since we create them locally inside the for loops.
-				if(!set.contains(cage)) {
-					set.add(cage);
-				}
+				
 		}
 
 
 		// calls method to check if the node has neighboring nodes
 		checkNeighbors(finalMatrix);
 
+		// this returns the finalMatrix of nodes, but it also creates a hashset of cages, so that's more useful.
 		return finalMatrix;
 	}
 
@@ -153,6 +150,7 @@ public class BoardMaker {
 				}
 			}
 		}
+		//System.out.println(arr);
 		return arr;
 	}
 
@@ -162,8 +160,6 @@ public class BoardMaker {
 			System.out.println(" ");
 			for(int j = 0; j < puzzleSize; j++) {
 				System.out.print(finalMatrix[i][j].finalNumber + " ");
-				//System.out.print(finalMatrix[i][j].row);
-				//System.out.print(finalMatrix[i][j].col + " ");
 			}
 		}
 	}
@@ -232,6 +228,10 @@ public class BoardMaker {
 	private String[] makeNumAndOpsArray() {
 		numbersAndOperations = new String[totalNumLines - startNumFill];
 		return numbersAndOperations;
+	}
+
+	public Cage[] getCages() {
+		return cages;
 	}
 
 

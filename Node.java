@@ -30,7 +30,8 @@ public class Node{
     //int[] nums = board.getPossibleNumbers(board.puzzleSize);
     
 
-    public Node(int row, int col) {
+    public Node(char character, int row, int col) {
+        this.character = character;
         this.finalNumber = 0;
         this.row = row;
         this.col = col;

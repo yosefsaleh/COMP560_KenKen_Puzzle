@@ -4,14 +4,16 @@ import java.util.ArrayList;
 
 public class Cage {
 
-private int total;
-private char oper;
-private ArrayList<Node> nodes;
+public int total;
+public char letter;
+public char oper;
+public ArrayList<Node> nodes;
 
-public Cage(int g, char op) {
+public Cage(int g, char op, char letter, ArrayList<Node> nodes) {
     total = g;
     oper = op;
-    nodes = new ArrayList<Node>();
+    this.letter = letter;
+    this.nodes = nodes;
 }
 
 public int getTotal() {

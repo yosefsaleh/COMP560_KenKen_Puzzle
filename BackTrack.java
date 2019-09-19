@@ -20,12 +20,12 @@ public class BackTrack {
     int [][]solutionBoard = new int[n][n];
     final int lower = 1;
     int guess = 1;
-    for (int i = 0; i < solutionBoard.length; i++) {
+   /* for (int i = 0; i < solutionBoard.length; i++) {
         for (int j = 0; j< solutionBoard.length; j++) {
             int random = (int) (Math.random() * (board.getPuzzleSize())) + lower;
             board.finalMatrix[i][j].solution = random;
         }
-    }
+    }*/
     for (int i = 0; i < board.finalMatrix.length; i++) {
         System.out.println(" ");
         for (int j = 0; j < board.finalMatrix.length; j++){
@@ -46,20 +46,32 @@ public class BackTrack {
 public boolean checkRow(int col, int num, BoardMaker board) {
     for(int indx = 0; indx < board.puzzleSize; indx++) {
         if(board.finalMatrix[indx][col].solution == num) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 // iterates through column and checks if the number is already in the row.. if so, return true.
 public boolean checkCol(int row, int num, BoardMaker board) {
     for(int indx = 0; indx < board.puzzleSize; indx++) {
         if(board.finalMatrix[row][indx].solution == num) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
+}
+
+public Node findEmptyCell(BoardMaker board) {
+    Node node = null;
+    for(int i = 0; i< board.puzzleSize; i++) {
+        for(int j = 0; j < board.puzzleSize; j++) {
+            if(board.finalMatrix[i][j].solution == 0) {
+                node = board.finalMatrix[i][j];
+            }
+        }
+    }
+    return node;
 }
 
 public boolean checkCage(Node n, BoardMaker board) {
@@ -124,6 +136,43 @@ public boolean works(Node node, int num, BoardMaker board) {
         return false;
     }
     return true;
+}
+
+
+public boolean solve(BoardMaker board) {
+    Node node = findEmptyCell(board);
+/*    for (int i = 0; i < board.getPuzzleSize(); i ++) {
+        for (int j = 0; j < board.getPuzzleSize(); j++) {
+            if(board.finalMatrix[i][j].solution == 0) {
+                for (int sol = 1; sol <= board.getPuzzleSize(); sol++) {
+                    if (works(board.finalMatrix[i][j], sol, board)) {
+                        board.finalMatrix[i][j].solution = sol;
+                        System.out.println("this is working");
+                        if(solve(board)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+*/
+    if(node != null) {
+        for(int sol = 1; sol <= board.puzzleSize; sol++) {
+            if(works(node,sol, board)) {
+                board.finalMatrix[node.row][node.col].solution= sol;
+                if(solve(board)) {
+                    return true;
+                }
+                board.finalMatrix[node.row][node.col].solution= 0;
+            }
+        }
+        return false;
+    } else {
+        return true;
+    }
+
 }
 
 

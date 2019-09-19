@@ -29,6 +29,15 @@ public class Main {
 				System.out.println(back.checkCage(board.finalMatrix[i][j], board));
 			}
 		}
+
+		System.out.println(back.solve(board));
+
+		for(int i = 0; i < board.puzzleSize; i++) {
+			System.out.println(" ");
+			for(int j = 0; j < board.puzzleSize; j++) {
+				System.out.print(board.finalMatrix[i][j].solution);
+			}
+		}
 		
 		
 	}

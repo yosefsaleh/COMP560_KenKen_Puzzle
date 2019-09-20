@@ -26,12 +26,6 @@ public class BackTrack {
             board.finalMatrix[i][j].solution = random;
         }
     }*/
-    for (int i = 0; i < board.finalMatrix.length; i++) {
-        System.out.println(" ");
-        for (int j = 0; j < board.finalMatrix.length; j++){
-            System.out.print(board.finalMatrix[i][j].solution);
-        }
-    }
 
 
 
@@ -43,9 +37,9 @@ public class BackTrack {
 }
 
 // iterates through row and checks if the number is already in the row.. if so, return true.
-public boolean checkRow(int col, int num, BoardMaker board) {
+public boolean checkRow(int row, int num, BoardMaker board) {
     for(int indx = 0; indx < board.puzzleSize; indx++) {
-        if(board.finalMatrix[indx][col].solution == num) {
+        if(board.finalMatrix[row][indx].solution == num) {
             return false;
         }
     }
@@ -53,9 +47,9 @@ public boolean checkRow(int col, int num, BoardMaker board) {
 }
 
 // iterates through column and checks if the number is already in the row.. if so, return true.
-public boolean checkCol(int row, int num, BoardMaker board) {
+public boolean checkCol(int col, int num, BoardMaker board) {
     for(int indx = 0; indx < board.puzzleSize; indx++) {
-        if(board.finalMatrix[row][indx].solution == num) {
+        if(board.finalMatrix[indx][col].solution == num) {
             return false;
         }
     }
@@ -71,54 +65,103 @@ public Node findEmptyCell(BoardMaker board) {
             }
         }
     }
+    System.out.println(node.character);
     return node;
 }
 
-public boolean checkCage(Node n, BoardMaker board) {
+public boolean checkCage(Node n, BoardMaker board, int sol) {
     Cage cage;
     int index = 0;
     for(int i = 0; i < board.cages.length; i++) {
         if(n.character == board.cages[i].letter) {
+            //System.out.println(board.cages[i].letter);
             index = i;
         }
     }
     cage = board.cages[index];
+    //System.out.println(cage.total);
 
-    if(cage.containsEmptyCell()) {
-        return false;
-    }
+    //if(cage.containsEmptyCell()) {
+    //   return true;
+    //}
     char op = cage.oper;
+    //System.out.println(op);
     int num = cage.total;
     ArrayList<Node> nodes = cage.nodes;
     if(op == '+') {
-        int sum = 0;
+        //int sum = 0;
+        int sum = sol;
         for(int i = 0; i < nodes.size(); i++) {
+            //sum += nodes.get(i).solution;
+            //if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
+            //    sum+= nodes.get(i).solution;
+            //}
             sum += nodes.get(i).solution;
         }
-        if(sum == cage.total) {
+        if(sum <= cage.total) {
             return true;
         }
     }
     if(op == '-') {
         int first = nodes.get(0).solution;
         int second = nodes.get(1).solution;
-        if((first - second) == cage.total || (second - first) == cage.total) {
+        if(first == 0) {
+            if(second == 0) {
+                return true;
+            } else if(second - sol == cage.total) {
+                return true;
+            } else if(sol - second == cage.total) {
+                return true;
+            }
+        } else if(first - sol == cage.total) {
+            return true;
+        } else if(sol - first == cage.total) {
             return true;
         }
+        //if((first - second) == cage.total || (second - first) == cage.total) {
+        //    return true;
+        //}
     }
     if(op == '/') {
         int first = nodes.get(0).solution;
         int second = nodes.get(1).solution;
+        if(first == 0) {
+            if(second == 0) {
+                return true;
+            } else if(second/sol == 0) {
+                return true;
+            } else if(sol/second == 0) {
+                return true;
+            }
+        } else if(first/sol == 0) {
+            return true;
+        } else if(sol/first == 0) {
+            return true;
+        }
+        /*if(first == 0 && second ==0) {
+            return true;
+        }
+        if(first == 0) {
+            return true;
+        }
+        if(second == 0) {
+            return true;
+        }
         if((first / second) == cage.total || (second / first) == cage.total) {
             return true;
         }
+        */
     }
     if(op == '*') {
-        int product = 0;
+        //int product = 1;
+        int product = sol;
         for(int i = 0; i < nodes.size(); i++) {
+            //if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
+            //    product+= nodes.get(i).solution;
+            //}
             product *= nodes.get(i).solution;
         }
-        if(product == cage.total) {
+        if(product <= cage.total) {
             return true;
         }
     }
@@ -126,53 +169,30 @@ public boolean checkCage(Node n, BoardMaker board) {
 }
 
 public boolean works(Node node, int num, BoardMaker board) {
-    if(checkRow(node.row, num, board)) {
-        return false;
+    if(checkRow(node.row, num, board) && checkCol(node.col, num, board) && checkCage(node,board, num)) {
+        return true;
     }
-    if(checkCol(node.col, num, board)) {
-        return false;
-    }
-    if(checkCage(node, board)) {
-        return false;
-    }
-    return true;
+    return false;
 }
 
 
 public boolean solve(BoardMaker board) {
     Node node = findEmptyCell(board);
-/*    for (int i = 0; i < board.getPuzzleSize(); i ++) {
-        for (int j = 0; j < board.getPuzzleSize(); j++) {
-            if(board.finalMatrix[i][j].solution == 0) {
-                for (int sol = 1; sol <= board.getPuzzleSize(); sol++) {
-                    if (works(board.finalMatrix[i][j], sol, board)) {
-                        board.finalMatrix[i][j].solution = sol;
-                        System.out.println("this is working");
-                        if(solve(board)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return false;
-*/
-    if(node != null) {
-        for(int sol = 1; sol <= board.puzzleSize; sol++) {
-            if(works(node,sol, board)) {
-                board.finalMatrix[node.row][node.col].solution= sol;
-                if(solve(board)) {
-                    return true;
-                }
-                board.finalMatrix[node.row][node.col].solution= 0;
-            }
-        }
-        return false;
-    } else {
+    if(node == null) {
         return true;
     }
-
+        {
+            for (int sol = 1; sol <= board.puzzleSize; sol++) {
+                if (works(node, sol, board)) {
+                    node.solution = sol;
+                    if (solve(board)) {
+                        return true;
+                    }
+                    node.solution = 0;
+                }
+            }
+            return false;
+        }
 }
 
 

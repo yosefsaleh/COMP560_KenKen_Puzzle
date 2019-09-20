@@ -24,12 +24,6 @@ public class Main {
 		back.main(args);
 
 
-		for(int i = 0; i < board.finalMatrix.length; i++) {
-			for(int j = 0; j < board.finalMatrix.length; j++) {
-				System.out.println(back.checkCage(board.finalMatrix[i][j], board));
-			}
-		}
-
 		System.out.println(back.solve(board));
 
 		for(int i = 0; i < board.puzzleSize; i++) {

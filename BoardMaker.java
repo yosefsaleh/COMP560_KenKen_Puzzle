@@ -42,7 +42,6 @@ public class BoardMaker {
 		int lineNumber = 0; // indicates what line the scanner is at
 		int row = 0; 
 		int col = 0;
-		
 		int indx = 0;
 		
 		// Created a Buffered reader and used a simple while loop to read the file and get the total number of lines for the file
@@ -131,12 +130,14 @@ public class BoardMaker {
 				// to save the cages since we create them locally inside the for loops.
 				
 		}
-
-
-		// calls method to check if the node has neighboring nodes
-		checkNeighbors(finalMatrix);
-
 		// this returns the finalMatrix of nodes, but it also creates a hashset of cages, so that's more useful.
+		/*printFinalMatrix();
+		System.out.println(cages[0].letter);
+		System.out.println(cages[0].oper);
+		System.out.println(cages[0].total);
+		System.out.println(cages[0].getNodes().get(0).character);
+		System.out.println(cages[0].getNodes().get(1).character);
+		*/
 		return finalMatrix;
 	}
 
@@ -159,44 +160,7 @@ public class BoardMaker {
 		for (int i = 0; i < puzzleSize; i++) {
 			System.out.println(" ");
 			for(int j = 0; j < puzzleSize; j++) {
-				System.out.print(finalMatrix[i][j].finalNumber + " ");
-			}
-		}
-	}
-
-
-	// this method iterates through the rows and columns of the Node[][] and compares the nodes above, below,
-	// left, and right of the current node to see if they have matching characters.. if they do, then update
-	// the neighbor of the current node
-	private void checkNeighbors(Node[][] matrix) {
-		for(int row = 0; row < puzzleSize; row++) {
-			for(int col = 0; col < puzzleSize; col++) {
-				Node temp = matrix[row][col];
-
-				if(col - 1 >= 1) {
-					Node temp2 = matrix[row][col-1];
-					if(temp.character == temp2.character) {
-						temp.left = matrix[row][col-1];
-					}
-				}
-				if(col + 1 < puzzleSize) {
-					Node temp2 = matrix[row][col+1];
-					if(temp.character == temp2.character) {
-						temp.right = matrix[row][col+1];
-					}
-				}
-				if(row - 1 >= 0) {
-					Node temp2 = matrix[row-1][col];
-					if(temp.character == temp2.character) {
-						temp.up = matrix[row-1][col];
-					}
-				}
-				if(row + 1 < puzzleSize) {
-					Node temp2 = matrix[row+1][col];
-					if(temp.character == temp2.character) {
-						temp.down = matrix[row+1][col];
-					}
-				}
+				System.out.print(finalMatrix[i][j].character + " ");
 			}
 		}
 	}
@@ -234,17 +198,6 @@ public class BoardMaker {
 		return cages;
 	}
 
-
-
-
-	public int[] getPossibleNumbers(int puzzleSize) {
-		int[] array = new int[puzzleSize];
-        for(int i =0; i < puzzleSize; i++) {
-			array[i] = i+1;
-		}
-
-		return array;
-	}
 	public int getPuzzleSize() {
 		return puzzleSize;
 	}

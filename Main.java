@@ -10,21 +10,11 @@ public class Main {
 		File inputFile = new File("/Users/edesern/Documents/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
 		BoardMaker board = new BoardMaker(inputFile);
 
-
-		//board.printFinalMatrix();
-		
-		
-		
-		// Use these for testing the creation of the board
-		//System.out.println(Arrays.deepToString(board.boardMatrix));
-		//System.out.println(Arrays.deepToString(board.numbersAndOperations));
-		
-		//board.printFinalMatrix();
+		// call the backtracking algorithm and solve the kenken puzzle
 		BackTrack back = new BackTrack(board);
 		back.main(args);
-
-
-		System.out.println(back.solve(board));
+		back.solve(board);
+		//System.out.println(back.iterations);
 
 		for(int i = 0; i < board.puzzleSize; i++) {
 			System.out.println(" ");
@@ -32,6 +22,12 @@ public class Main {
 				System.out.print(board.finalMatrix[i][j].solution);
 			}
 		}
+
+		// call the local search algorithm and solve the kenken puzzle
+		//LocalSearch local = new LocalSearch(board);
+		//local.main(args);
+		//local.solve(board);
+		//System.out.println(local.iterations);
 		
 		
 	}

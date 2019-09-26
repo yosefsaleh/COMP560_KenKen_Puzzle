@@ -22,6 +22,8 @@ public class Main {
 				System.out.print(" ");
 			}
 		}
+		System.out.println(" ");
+		System.out.println(back.iterations);
 
 
 		// call the local search algorithm and solve the kenken puzzle
@@ -31,10 +33,11 @@ public class Main {
 			}
 		}
 
-		/*LocalSearch local = new LocalSearch(board);
+		LocalSearch local = new LocalSearch(board);
 		local.main(args);
-		local.solve(board);
 		System.out.println(" ");
+		local.solve(board);
+
 		for(int i = 0; i < board.puzzleSize; i++) {
 			System.out.println(" ");
 			for(int j = 0; j < board.puzzleSize; j++) {
@@ -42,7 +45,8 @@ public class Main {
 				System.out.print(" ");
 			}
 		}
-		*/
+		
+		
 		//System.out.println(local.iterations);
 		
 		

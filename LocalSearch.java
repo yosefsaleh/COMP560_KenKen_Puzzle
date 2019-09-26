@@ -62,78 +62,68 @@ public Node findEmptyCell(BoardMaker board) {
 }
 
 // checks to see if the cage satisfies the final number and the operation
-public boolean checkCage(Node n, BoardMaker board) {
+public double checkCage(Node n, Node t, BoardMaker board) {
     Cage cage;
     int index = 0;
     for(int i = 0; i < board.cages.length; i++) {
-        if(n.character == board.cages[i].letter) {  
+        if(t.character == board.cages[i].letter) {  
             index = i;
         }
     }
     cage = board.cages[index];
     char op = cage.oper;
     ArrayList<Node> nodes = cage.nodes;
+    int newSolution = n.solution;
     if(op == '+') {
-        int sum = n.solution;
+        int sum = newSolution;
         for(int i = 0; i < nodes.size(); i++) {
-            if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
-                if(nodes.get(i).solution == 0) {
-                    return true;
-                }
+            if(!((nodes.get(i).col == t.col) && (nodes.get(i).row == t.row))) {
                 sum+= nodes.get(i).solution;
             }
         }
-        if(sum == cage.total) {
-            return true;
-        }
+        return cage.total - sum;
     }
      else if(op == '-') {
-    	 int difference = n.solution;
+    	 int difference = newSolution;
     	 for (int i = 0; i < nodes.size(); i++) {
-             if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
-                 if(nodes.get(i).solution == 0) {
-                     return true;
-                 }
+             if(!((nodes.get(i).col == t.col) && (nodes.get(i).row == t.row))) {
                  difference-= nodes.get(i).solution;
              }
-    	 }
-    	 if (difference == cage.total) {
-    		 return true;
-    	 }
+         }
+         // maybe change this
+    	 return cage.total - difference;
     }
      else if(op == '/') {
-        int first = nodes.get(0).solution;
-        int second = nodes.get(1).solution;
-        if(first == 0) {
-            return true;
+        int first = newSolution;
+        int second = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            if(!((nodes.get(i).col == t.col) && (nodes.get(i).row == t.row))) {
+                second = nodes.get(i).solution;
+            }
         }
-        if(second == 0) {
-            return true;
+        int right = 0;
+        int one = first/second;
+        int two = second/first;
+        if(one > two) {
+            right = one;
+        } else {
+            right = two;
         }
-        if((first / second) == cage.total || (second / first) == cage.total) {
-            return true;
-        }
+        return cage.total - right;
     }
      else if(op == '*') {
-        int product = n.solution;
+        int product = newSolution;
         for(int i = 0; i < nodes.size(); i++) {
-            if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
-                if(nodes.get(i).solution == 0) {
-                    return true;
-                }
+            if(!((nodes.get(i).col == t.col) && (nodes.get(i).row == t.row))) {
                 product*= nodes.get(i).solution;
             }
         }
-        if(product == cage.total) {
-            return true;
-        }
+        return cage.total - product;
     }
     else if(op == '=') {
-        if(nodes.get(0).solution == cage.total){
-            return true;
-        }
+        return cage.total - newSolution;
     }
-    return false;
+    return 100;
 }
 
 // checks each node if it satisfies the row, column, and cage
@@ -147,21 +137,103 @@ public boolean works(Node node, int num, BoardMaker board) {
 
 
 
-public boolean solve(BoardMaker board) {
+public void solve(BoardMaker board) {
     // fills board with numbers that satisfy the unique row and col rules.. ignores the cages for now. our 
     // hill climbing algorithm will use cage value/operation to climb the hill.
     fill(board);
-
     for(int i = 0; i < board.puzzleSize; i++) {
+        System.out.println(" ");
         for(int j = 0; j < board.puzzleSize; j++) {
-            checkCage(board.finalMatrix[i][j], board);
+            System.out.print(board.finalMatrix[i][j].solution);
+            System.out.print(" ");
         }
     }
+    System.out.println(" ");
+    int numIterations = 0;
 
+    // make a while loop that randomly selects an i and j..
+    // 
+    while(numIterations < 500000) {
+        int i = (int)(Math.random() * ((board.puzzleSize-1 - 0) + 1)) + 0;
+        int j = (int)(Math.random() * ((board.puzzleSize-1 - 0) + 1)) + 0;
+        double up = 1000000000;
+        double left = 200000000;
+        double down = 300000000;
+        double right = 40000000;
+        double min = 100000;
+        double original = checkCage(board.finalMatrix[i][j], board.finalMatrix[i][j], board);
+        if(original < min) {
+            min = original;
+        }
 
-    return false;
+        // check up node
+        if(i-1 >= 0) {
+            up = checkCage(board.finalMatrix[i-1][j], board.finalMatrix[i][j], board);
+        }
+        if(up < min) {
+            min = up;
+        }
+
+        // check left node
+        if(j-1 >= 0) {
+            left = checkCage(board.finalMatrix[i][j-1], board.finalMatrix[i][j], board);
+        }
+        if(left < min) {
+            min = left;
+        }
+
+        // check down node
+        if(i+1 < board.puzzleSize) {
+            down = checkCage(board.finalMatrix[i+1][j], board.finalMatrix[i][j], board);
+        }
+        if(down < min) {
+            min = down;
+        }
+
+        // check right node
+        if(j+1 < board.puzzleSize) {
+            right = checkCage(board.finalMatrix[i][j+1], board.finalMatrix[i][j], board);
+        }
+        if(right < min) {
+            min = right;
+        }
+        // check which nodes to switch
+        if(min == original) {
+            numIterations++;
+            continue;
+        }
+        if(min == up) {
+            switchNodes(board.finalMatrix[i][j], board.finalMatrix[i-1][j], board);
+            numIterations++;
+            continue;
+        }
+        if(min == left) {
+            switchNodes(board.finalMatrix[i][j], board.finalMatrix[i][j-1], board);
+            numIterations++;
+            continue;
+        }
+        if(min == down) {
+            switchNodes(board.finalMatrix[i][j], board.finalMatrix[i+1][j], board);
+            numIterations++;
+            continue;
+        }
+        if(min == right) {
+            switchNodes(board.finalMatrix[i][j], board.finalMatrix[i][j+1], board);
+            numIterations++;
+            continue;
+        }
+
+    }
+
 }
 
+
+    public void switchNodes(Node node, Node node2, BoardMaker board) {
+
+        int temp = node2.solution;
+        node2.solution = node.solution;
+        node.solution = temp;
+    }
 
     public boolean fill(BoardMaker board) {
     Node node = findEmptyCell(board);

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 public class BackTrack {
     int iterations;
@@ -183,7 +185,34 @@ public boolean solve(BoardMaker board) {
     // messes up on 2/ 6.
 
     Node node = findEmptyCell(board);
+    List<Integer> list = new ArrayList<Integer>();
     iterations++;
+    Cage cage;
+    int index = 0;
+    for(int i = 0; i < board.cages.length; i++) {
+        if(node.character == board.cages[i].letter) {
+            index = i;
+        }
+    }
+    cage = board.cages[index];
+    char op = cage.oper;
+    int total = cage.total;
+    ArrayList<Node> nodes = cage.nodes;
+        if(op == '+') {
+            List<Integer> listt = findNumbers(total, board);
+            if(node != null) {
+                for(int solu = 0; solu < listt.size(); solu++) {
+                    if(works(board.finalMatrix[node.row][node.col], listt.get(solu), board)) {
+                        board.finalMatrix[node.row][node.col].solution = listt.get(solu);
+                        if(solve(board)) {
+                            return true;
+                        } else {
+                            board.finalMatrix[node.row][node.col].solution = 0;
+                        }
+                    }
+                }
+            }
+        } else {
     if(node != null) {
         for(int sol = 1; sol < board.puzzleSize + 1; sol++) {
             if(works(board.finalMatrix[node.row][node.col], sol, board)) {
@@ -200,6 +229,25 @@ public boolean solve(BoardMaker board) {
     return true;
     }
 }
+return false;
+}
+
+    private List<Integer> findNumbers(int sum, BoardMaker board) {
+        List<Integer> list = new ArrayList<Integer>();
+        for(int i = 1; i <= board.puzzleSize; i++) {
+            for(int j = 1; j <= board.puzzleSize; j++) {
+                if(i + j == sum) {
+                    if(!list.contains(i)) {
+                        list.add(i);
+                    }
+                    if(!list.contains(j)) {
+                        list.add(j);
+                    }
+                }
+            }
+        }
+        return list;
+    }
 
 
 }

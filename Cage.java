@@ -24,7 +24,6 @@ public char getOperation() {
     return oper;
 }
 
-
 public boolean contains(Node node) {
     if(!nodes.contains(node)) {
         return false;

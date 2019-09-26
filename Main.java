@@ -14,19 +14,35 @@ public class Main {
 		BackTrack back = new BackTrack(board);
 		back.main(args);
 		back.solve(board);
-		//System.out.println(back.iterations);
 
 		for(int i = 0; i < board.puzzleSize; i++) {
 			System.out.println(" ");
 			for(int j = 0; j < board.puzzleSize; j++) {
 				System.out.print(board.finalMatrix[i][j].solution);
+				System.out.print(" ");
 			}
 		}
 
+
 		// call the local search algorithm and solve the kenken puzzle
-		//LocalSearch local = new LocalSearch(board);
-		//local.main(args);
-		//local.solve(board);
+		for(int i = 0; i < board.puzzleSize; i++) {
+			for(int j = 0; j < board.puzzleSize; j++) {
+				board.finalMatrix[i][j].solution = 0;
+			}
+		}
+
+		/*LocalSearch local = new LocalSearch(board);
+		local.main(args);
+		local.solve(board);
+		System.out.println(" ");
+		for(int i = 0; i < board.puzzleSize; i++) {
+			System.out.println(" ");
+			for(int j = 0; j < board.puzzleSize; j++) {
+				System.out.print(board.finalMatrix[i][j].solution);
+				System.out.print(" ");
+			}
+		}
+		*/
 		//System.out.println(local.iterations);
 		
 		

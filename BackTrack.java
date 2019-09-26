@@ -14,7 +14,7 @@ public class BackTrack {
     }
 
     public static void main(String[] args) throws IOException {
-	File inputFile = new File("/Users/yoyosef/git/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
+	File inputFile = new File("/Users/edesern/Documents/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
     BoardMaker board = new BoardMaker(inputFile);
 
 }
@@ -97,15 +97,27 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
                  difference-= nodes.get(i).solution;
              }
     	 }
-    	 if (difference == cage.total) {
+    	 if (difference == cage.total || difference*-1 == cage.total) {
     		 return true;
     	 } else {
     		 return false;
     	 }
     }
      else if(op == '/') {
+        for (int i = 0; i < nodes.size(); i++) {
+            if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
+                if(nodes.get(i).solution == 0) {
+                    return true;
+                } else {
+                    if((nodes.get(i).solution / sol) == cage.total || (sol / nodes.get(i).solution) == cage.total) {
+                        return true;
+                    } 
+                }
+            }
+        }
         int first = nodes.get(0).solution;
         int second = nodes.get(1).solution;
+        /*
         if(first == 0) {
             if(second == 0) {
                 return true;
@@ -118,8 +130,8 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
             return true;
         } else if(sol/first == 0) {
             return true;
-        }
-        if(first == 0 && second ==0) {
+        }*/
+        /*if(first == 0 && second ==0) {
             return true;
         }
         if(first == 0) {
@@ -133,6 +145,7 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
         } else {
         	return false;
         }
+        */
     }
      else if(op == '*') {
         //int product = 1;
@@ -149,7 +162,11 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
         if(product == cage.total) {
             return true;
         }
-    }
+     } else if(op == '=') {
+         if(sol == cage.total) {
+             return true;
+         }
+     }
     return false;
 }
 
@@ -166,6 +183,7 @@ public boolean solve(BoardMaker board) {
     // messes up on 2/ 6.
 
     Node node = findEmptyCell(board);
+    iterations++;
     if(node != null) {
         for(int sol = 1; sol < board.puzzleSize + 1; sol++) {
             if(works(board.finalMatrix[node.row][node.col], sol, board)) {
@@ -176,7 +194,7 @@ public boolean solve(BoardMaker board) {
                     board.finalMatrix[node.row][node.col].solution = 0;
                 }
             }
-        } 
+        }
     return false;
 } else {
     return true;

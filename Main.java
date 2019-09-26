@@ -15,6 +15,7 @@ public class Main {
 		back.main(args);
 		back.solve(board);
 
+		// print solution
 		for(int i = 0; i < board.puzzleSize; i++) {
 			System.out.println(" ");
 			for(int j = 0; j < board.puzzleSize; j++) {
@@ -23,10 +24,12 @@ public class Main {
 			}
 		}
 		System.out.println(" ");
+
+		// print number of iterations
 		System.out.println(back.iterations);
 
 
-		// call the local search algorithm and solve the kenken puzzle
+		// fill finalMatrix with all 0s to start over
 		for(int i = 0; i < board.puzzleSize; i++) {
 			for(int j = 0; j < board.puzzleSize; j++) {
 				board.finalMatrix[i][j].solution = 0;
@@ -35,19 +38,8 @@ public class Main {
 
 		LocalSearch local = new LocalSearch(board);
 		local.main(args);
-		System.out.println(" ");
 		local.solve(board);
-
-		for(int i = 0; i < board.puzzleSize; i++) {
-			System.out.println(" ");
-			for(int j = 0; j < board.puzzleSize; j++) {
-				System.out.print(board.finalMatrix[i][j].solution);
-				System.out.print(" ");
-			}
-		}
-		
-		
-		//System.out.println(local.iterations);
+		System.out.println(local.iterations);
 		
 		
 	}

@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public class BackTrack {
@@ -41,6 +40,7 @@ public boolean checkCol(int col, int num, BoardMaker board) {
     return true;
 }
 
+// finds the next cell that has solution = 0.
 public Node findEmptyCell(BoardMaker board) {
     int index1 = 0;
     int index2 = 0;
@@ -60,9 +60,12 @@ public Node findEmptyCell(BoardMaker board) {
     return board.finalMatrix[index1][index2];
 }
 
+// checks if the nodes in the cage satisfy cage number and operation
 public boolean checkCage(Node n, BoardMaker board, int sol) {
     Cage cage;
     int index = 0;
+
+    // extract cage
     for(int i = 0; i < board.cages.length; i++) {
         if(n.character == board.cages[i].letter) {
             index = i;
@@ -72,17 +75,16 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
     char op = cage.oper;
     ArrayList<Node> nodes = cage.nodes;
     if(op == '+') {
-        //int sum = 0;
         int sum = sol;
         for(int i = 0; i < nodes.size(); i++) {
-            //sum += nodes.get(i).solution;
+
+            // adds up nodes not counting the node we have in the parameter of the method
             if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
                 if(nodes.get(i).solution == 0) {
                     return true;
                 }
                 sum+= nodes.get(i).solution;
             }
-            //sum += nodes.get(i).solution;
         }
         if(sum == cage.total) {
             return true;
@@ -117,40 +119,8 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
                 }
             }
         }
-        int first = nodes.get(0).solution;
-        int second = nodes.get(1).solution;
-        /*
-        if(first == 0) {
-            if(second == 0) {
-                return true;
-            } else if(second/sol == 0) {
-                return true;
-            } else if(sol/second == 0) {
-                return true;
-            }
-        } else if(first/sol == 0) {
-            return true;
-        } else if(sol/first == 0) {
-            return true;
-        }*/
-        /*if(first == 0 && second ==0) {
-            return true;
-        }
-        if(first == 0) {
-            return true;
-        }
-        if(second == 0) {
-            return true;
-        }
-        if((first / second) == cage.total || (second / first) == cage.total) {
-            return true;
-        } else {
-        	return false;
-        }
-        */
     }
      else if(op == '*') {
-        //int product = 1;
         int product = sol;
         for(int i = 0; i < nodes.size(); i++) {
             if(!((nodes.get(i).col == n.col) && (nodes.get(i).row == n.row))) {
@@ -159,7 +129,6 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
                 }
                 product*= nodes.get(i).solution;
             }
-            //product *= nodes.get(i).solution;
         }
         if(product == cage.total) {
             return true;
@@ -172,6 +141,8 @@ public boolean checkCage(Node n, BoardMaker board, int sol) {
     return false;
 }
 
+// checks the row and column to see if the number is unique in each
+// also checks if the nodes in the cage satisfy the cage number and operation
 public boolean works(Node node, int num, BoardMaker board) {
     if(checkRow(node.row, num, board) && checkCol(node.col, num, board) && checkCage(node,board, num)) {
         return true;
@@ -180,39 +151,11 @@ public boolean works(Node node, int num, BoardMaker board) {
 }
 
 
+// backtracking algorithm used to solve the kenken
 public boolean solve(BoardMaker board) {
-
-    // messes up on 2/ 6.
-
     Node node = findEmptyCell(board);
-    List<Integer> list = new ArrayList<Integer>();
+    // update iterations
     iterations++;
-    Cage cage;
-    int index = 0;
-    for(int i = 0; i < board.cages.length; i++) {
-        if(node.character == board.cages[i].letter) {
-            index = i;
-        }
-    }
-    cage = board.cages[index];
-    char op = cage.oper;
-    int total = cage.total;
-    ArrayList<Node> nodes = cage.nodes;
-        if(op == '+') {
-            List<Integer> listt = findNumbers(total, board);
-            if(node != null) {
-                for(int solu = 0; solu < listt.size(); solu++) {
-                    if(works(board.finalMatrix[node.row][node.col], listt.get(solu), board)) {
-                        board.finalMatrix[node.row][node.col].solution = listt.get(solu);
-                        if(solve(board)) {
-                            return true;
-                        } else {
-                            board.finalMatrix[node.row][node.col].solution = 0;
-                        }
-                    }
-                }
-            }
-        } else {
     if(node != null) {
         for(int sol = 1; sol < board.puzzleSize + 1; sol++) {
             if(works(board.finalMatrix[node.row][node.col], sol, board)) {
@@ -229,25 +172,4 @@ public boolean solve(BoardMaker board) {
     return true;
     }
 }
-return false;
-}
-
-    private List<Integer> findNumbers(int sum, BoardMaker board) {
-        List<Integer> list = new ArrayList<Integer>();
-        for(int i = 1; i <= board.puzzleSize; i++) {
-            for(int j = 1; j <= board.puzzleSize; j++) {
-                if(i + j == sum) {
-                    if(!list.contains(i)) {
-                        list.add(i);
-                    }
-                    if(!list.contains(j)) {
-                        list.add(j);
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-
 }

@@ -62,6 +62,11 @@ public Node findEmptyCell(BoardMaker board) {
 }
 
 // checks to see if the cage satisfies the final number and the operation
+// this one is different than the backtracking one because we are finding the
+// error between the cage number and the nodes in the cage
+// for example: if cage is A:11+ and the nodes inside the cage
+// add up to 8.. the error would be 11-8 = 3. This is used later to determine
+// which nodes to switch based on the lowest error
 public double checkCage(Node n, Node t, BoardMaker board) {
     Cage cage;
     int index = 0;
@@ -136,24 +141,19 @@ public boolean works(Node node, int num, BoardMaker board) {
 
 
 
-
+// local search algorithm to solve kenken.. can get stuck at a local maximum so a 
+// solution is not guarenteed.
 public void solve(BoardMaker board) {
     // fills board with numbers that satisfy the unique row and col rules.. ignores the cages for now. our 
     // hill climbing algorithm will use cage value/operation to climb the hill.
     fill(board);
-    for(int i = 0; i < board.puzzleSize; i++) {
-        System.out.println(" ");
-        for(int j = 0; j < board.puzzleSize; j++) {
-            System.out.print(board.finalMatrix[i][j].solution);
-            System.out.print(" ");
-        }
-    }
-    System.out.println(" ");
     int numIterations = 0;
 
     // make a while loop that randomly selects an i and j..
-    // 
-    while(numIterations < 500000) {
+    while(numIterations < 5) {
+        iterations++;
+
+        // randomly select an i and a j per iteration
         int i = (int)(Math.random() * ((board.puzzleSize-1 - 0) + 1)) + 0;
         int j = (int)(Math.random() * ((board.puzzleSize-1 - 0) + 1)) + 0;
         double up = 1000000000;
@@ -228,6 +228,7 @@ public void solve(BoardMaker board) {
 }
 
 
+    // switches node.solution between two nodes.
     public void switchNodes(Node node, Node node2, BoardMaker board) {
 
         int temp = node2.solution;
@@ -235,6 +236,8 @@ public void solve(BoardMaker board) {
         node.solution = temp;
     }
 
+
+    // fills board with numbers that satisfy unique row and column.. ignores cages
     public boolean fill(BoardMaker board) {
     Node node = findEmptyCell(board);
     if(node != null) {

@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BackTrack {
+public class ImprovedBackTracking {
     int iterations;
 
-    public BackTrack(BoardMaker board) {
+    public ImprovedBackTracking(BoardMaker board) {
         iterations = 0;
     }
 
@@ -146,11 +146,57 @@ public boolean works(Node node, int num, BoardMaker board) {
 }
 
 
-// backtracking algorithm used to solve the kenken
+// improved backtracking algorithm used to solve the kenken
 public boolean solve(BoardMaker board) {
     Node node = findEmptyCell(board);
     // update iterations
     iterations++;
+    Cage cage;
+    int index = 0;
+
+    // extract cage
+    if(node!= null) {
+        for(int i = 0; i < board.cages.length; i++) {
+            if(node.character == board.cages[i].letter) {
+                index = i;
+            }
+        }
+    }
+    cage = board.cages[index];
+    char op = cage.oper;
+
+    // we can cut down iterations if we check which values could divide into cage.total
+    // checkDiv does this
+    if(op == '/' && node != null) {
+        List<Integer> list = checkDiv(op, cage.total, board);
+        for(int sol = 0; sol < list.size(); sol++) {
+            if(works(board.finalMatrix[node.row][node.col], list.get(sol), board)) {
+                board.finalMatrix[node.row][node.col].solution = list.get(sol);
+                if(solve(board)) {
+                    return true;
+                } else {
+                    board.finalMatrix[node.row][node.col].solution = 0;
+                }
+            }
+        }
+
+        // we can cut down the iterations if we do % on the total.. only iterate through
+        // choices that could be multiplied to reach cage.total
+    } else if(op == '*' && node != null) {
+        List<Integer> list = checkMult(op, cage.total, board);
+        for(int sol = 0; sol < list.size(); sol++) {
+            if(works(board.finalMatrix[node.row][node.col], list.get(sol), board)) {
+                board.finalMatrix[node.row][node.col].solution = list.get(sol);
+                if(solve(board)) {
+                    return true;
+                } else {
+                    board.finalMatrix[node.row][node.col].solution = 0;
+                }
+            }
+        }
+    } else {
+
+    // if operation isnt / or * we reach here
     if(node != null) {
         for(int sol = 1; sol < board.puzzleSize + 1; sol++) {
             if(works(board.finalMatrix[node.row][node.col], sol, board)) {
@@ -166,5 +212,36 @@ public boolean solve(BoardMaker board) {
 } else {
     return true;
     }
+}
+return false;
+}
+
+    public List<Integer> checkMult(char op, int total, BoardMaker board) {
+        List<Integer> list = new ArrayList<Integer>();
+        for(int i = 1; i <=board.puzzleSize; i++) {
+            if(total%i == 0) {
+                list.add(i);
+            }
+        }
+        return list;
+    }
+
+    public List<Integer> checkDiv(char op, int total, BoardMaker board) {
+    List<Integer> list = new ArrayList<Integer>();
+    for(int i = 1; i <= board.puzzleSize; i++) {
+        for(int j = 1; j <= board.puzzleSize; j++) {
+            double num = i;
+            double num2 = j;
+            if(num/num2 == total || num2/num == total) {
+                if(!list.contains((int)num)) {
+                    list.add((int)num);
+                }
+                if(!list.contains((int)num2)) {
+                    list.add((int)num2);
+                }
+            }
+        }
+    }
+    return list;
 }
 }

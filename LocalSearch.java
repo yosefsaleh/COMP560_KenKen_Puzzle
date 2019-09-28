@@ -13,13 +13,6 @@ public class LocalSearch {
     }
 
 
-public static void main(String[] args) throws IOException {
-    File inputFile = new File("/Users/edesern/Documents/COMP560_KenKen_Puzzle/COMP560_KenKen_Puzzle/src/kenken/Puzzle1.txt");
-    BoardMaker board = new BoardMaker(inputFile);
-    int n = board.getPuzzleSize();
-
-
-}
 
 // iterates through row and checks if the number is already in the row.. if so, return true.
 public boolean checkRow(int row, int num, BoardMaker board) {
@@ -95,6 +88,9 @@ public double checkCage(Node n, Node t, BoardMaker board) {
                  difference-= nodes.get(i).solution;
              }
          }
+         if(difference < 0) {
+            difference = difference *-1;
+         }
          // maybe change this
     	 return cage.total - difference;
     }
@@ -150,7 +146,7 @@ public void solve(BoardMaker board) {
     int numIterations = 0;
 
     // make a while loop that randomly selects an i and j..
-    while(numIterations < 5) {
+    while(numIterations < 500) {
         iterations++;
 
         // randomly select an i and a j per iteration

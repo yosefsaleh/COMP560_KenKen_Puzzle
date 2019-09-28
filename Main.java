@@ -12,7 +12,6 @@ public class Main {
 
 		// call the backtracking algorithm and solve the kenken puzzle
 		BackTrack back = new BackTrack(board);
-		back.main(args);
 		back.solve(board);
 
 		// print solution
@@ -28,6 +27,17 @@ public class Main {
 		// print number of iterations
 		System.out.println(back.iterations);
 
+		// fill finalMatrix with all 0s to start over
+		for(int i = 0; i < board.puzzleSize; i++) {
+			for(int j = 0; j < board.puzzleSize; j++) {
+				board.finalMatrix[i][j].solution = 0;
+			}
+		}
+
+		ImprovedBackTracking improved = new ImprovedBackTracking(board);
+		improved.solve(board);
+		System.out.println(improved.iterations);
+
 
 		// fill finalMatrix with all 0s to start over
 		for(int i = 0; i < board.puzzleSize; i++) {
@@ -37,7 +47,6 @@ public class Main {
 		}
 
 		LocalSearch local = new LocalSearch(board);
-		local.main(args);
 		local.solve(board);
 		System.out.println(local.iterations);
 		
